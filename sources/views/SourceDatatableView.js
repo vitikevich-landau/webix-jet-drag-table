@@ -1,15 +1,12 @@
 import {JetView} from "webix-jet";
-import TimeEditorPopupView from "jet-views/LeftTimeEditorPopup";
 
 export default class SourceDatatableView extends JetView {
 	throttle(func, ms) {
-		
 		let isThrottled = false,
 			savedArgs,
 			savedThis;
 		
 		function wrapper() {
-			
 			if (isThrottled) { // (2)
 				savedArgs = arguments;
 				savedThis = this;
