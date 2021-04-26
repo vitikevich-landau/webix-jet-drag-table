@@ -12,6 +12,10 @@ const hoursSliderHandler = function () {
 	 * 	Need throttle to save
 	 * */
 	
+	/***
+	 * 	Enable or disable keyboard control
+	 * */
+	
 	grid.updateItem(
 		sid.row,
 		{

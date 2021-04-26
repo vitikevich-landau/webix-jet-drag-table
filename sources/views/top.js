@@ -1,6 +1,6 @@
 import {JetView, plugins} from "webix-jet";
-import LeftTimeEditorPopup from "jet-views/LeftTimeEditorPopup";
-import RightTimeEditorPopup from "jet-views/RightTimeEditorPopup";
+import leftTimeEditorPopup from "jet-views/leftTimeEditorPopup";
+import rightTimeEditorPopup from "jet-views/rightTimeEditorPopup";
 
 export default class TopView extends JetView {
 	config() {
@@ -20,7 +20,7 @@ export default class TopView extends JetView {
 		
 		webix.i18n.setLocale("ru-RU");
 		
-		webix.ui(LeftTimeEditorPopup);
-		webix.ui(RightTimeEditorPopup);
+		webix.ui(leftTimeEditorPopup);
+		webix.ui(rightTimeEditorPopup);
 	}
 }
