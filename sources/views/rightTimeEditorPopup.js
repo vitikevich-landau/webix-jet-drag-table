@@ -7,9 +7,13 @@ const hoursSliderHandler = function () {
 	const sid = grid.getSelectedId();
 	const cell = grid.getItem(sid.row);
 	const [h, m] = cell.time.split(":");
-	cell["time"] = `${value}:${m}`;
 	
-	grid.refresh();
+	/***
+	 * 	Enable or disable keyboard control
+	 * */
+	grid.updateItem(sid.row, {...cell,time: `${value}:${m}`});
+	
+	// grid.refresh();
 };
 
 const minutesSliderHandler = function () {
@@ -18,7 +22,8 @@ const minutesSliderHandler = function () {
 	const sid = grid.getSelectedId();
 	const cell = grid.getItem(sid.row);
 	const [h, m] = cell.time.split(":");
-	cell["time"] = `${h}:${value}`;
+	
+	grid.updateItem(sid.row, {...cell, time: `${h}:${value}`});
 	
 	grid.refresh();
 };

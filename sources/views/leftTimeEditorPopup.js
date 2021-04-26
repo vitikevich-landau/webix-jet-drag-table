@@ -9,20 +9,9 @@ const hoursSliderHandler = function () {
 	const [h, m] = cell.time.split(":");
 	
 	/***
-	 * 	Need throttle to save
-	 * */
-	
-	/***
 	 * 	Enable or disable keyboard control
 	 * */
-	
-	grid.updateItem(
-		sid.row,
-		{
-			...cell,
-			time: `${value}:${m}`
-		}
-	);
+	grid.updateItem(sid.row, {...cell,time: `${value}:${m}`});
 	
 	// grid.refresh();
 };
@@ -34,13 +23,7 @@ const minutesSliderHandler = function () {
 	const cell = grid.getItem(sid.row);
 	const [h, m] = cell.time.split(":");
 	
-	grid.updateItem(
-		sid.row,
-		{
-			...cell,
-			time: `${h}:${value}`
-		}
-	);
+	grid.updateItem(sid.row, {...cell, time: `${h}:${value}`});
 	
 	// grid.refresh();
 };
