@@ -17,7 +17,7 @@ export default class SourceDatatableView extends JetView {
 			
 			isThrottled = true;
 			
-			setTimeout(function() {
+			setTimeout(function () {
 				isThrottled = false; // (3)
 				if (savedArgs) {
 					wrapper.apply(savedThis, savedArgs);
@@ -27,6 +27,22 @@ export default class SourceDatatableView extends JetView {
 		}
 		
 		return wrapper;
+	}
+	
+	clearFilters() {
+		this.eachColumn((id, col) => {
+			const filter = this.getFilter(id);
+			if (filter) {
+				if (filter.setValue) filter.setValue("");
+				else filter.value = "";
+			}
+		});
+		
+		this.filterByAll();
+	}
+	
+	clearSorts() {
+		this.eachColumn(() => this.markSorting());
 	}
 	
 	onKeyPressHandler(code, e) {
@@ -39,28 +55,58 @@ export default class SourceDatatableView extends JetView {
 			const selected = this.getSelectedId();
 			if (selected) {
 				const next = this.getNextId(selected);
-				if (next) {
-					this.select(next);
-				}
 				
-				this.remove(selected);
+				webix.confirm({
+					title: "Внимание!",
+					type: "confirm-warning",
+					text: "Это приведёт к удалению из БД. Удалить запись?"
+				})
+					.then(() => {
+						this.remove(selected);
+						
+						if (next) {
+							this.select(next);
+						}
+						
+						this.getBody().focus();
+						
+						// this.fo
+					});
 			}
 		}
 	}
 	
 	onBeforeDropHandler(options) {
+		const self = this;
 		return function (ctx, e) {
 			const {from, source} = ctx;
 			const now = new Date;
 			
 			this.add({
-				title: from.getItem(source[0]).title,
-				date: now,
+				fullname: from.getItem(source[0]).fullname,
+				date: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
 				time: webix.Date.dateToStr("%H:%i")(now),
+				// time: now,
 				...options
 			});
 			
 			this.sort("id", "desc");
+			
+			/***
+			 * 	Сбросить фильтры
+			 * */
+			self.clearFilters.call(this);
+			// this.filterByAll();
+			// this.refreshFilter();
+			
+			/***
+			 * 	Сбросить сортировки
+			 * */
+			self.clearSorts.call(this);
+			
+			
+			this.select(this.getFirstId());
+			
 			return false;
 		};
 	}
@@ -81,29 +127,52 @@ export default class SourceDatatableView extends JetView {
 	}
 	
 	config() {
+		const proxy = webix.proxy("rest", "http://localhost", {
+			save: this.throttle(function (view, params) {
+				return webix.proxy.rest.save.call(this, view, params);
+			}, 1500)
+		});
+		
 		return {
 			view: "datatable",
+			save: proxy,
 			columns: [
-				{id: "title", header: "ФИО", fillspace: true, sort: "string"},
-				{id: "action", header: "Действие"},
 				{
+					id: "fullname",
+					header: ["ФИО", {content: "textFilter"}],
+					fillspace: true,
+					sort: "string"
+				},
+				{
+					id: "action",
+					header: ["Действие", ""]
+				},
+				{
+					width: 140,
 					id: "date",
-					header: "Дата",
+					header: ["Дата", {content: "datepickerFilter"}],
 					editor: "date",
-					format: dateObj => webix.Date.dateToStr("%d.%m.%Y")(dateObj)
+					// format: dateObj => webix.Date.dateToStr("%d.%m.%Y")(dateObj)
+					format:webix.i18n.dateFormatStr
 				},
 				{
 					id: "time",
-					header: "Время",
+					header: ["Время", ""],
+					sort: "string"
+					//format: dateObj => webix.Date.dateToStr("%H:%i")(dateObj)
 				}
 			],
 			editable: true,
 			drag: "target",
 			select: true,
 			// datathrottle: 500,
+			css: "unselectable",
 			on: {
 				onKeyPress: this.onKeyPressHandler,
-				onHeaderClick: this.onHeaderClickHandler
+				onHeaderClick: this.onHeaderClickHandler,
+				onAfterEditStop: function (state, editor, ignoreUpdate) {
+					this.filterByAll();
+				}
 			}
 		};
 	}
@@ -119,6 +188,7 @@ export default class SourceDatatableView extends JetView {
 		webix.editors.$popup = {
 			date: {
 				view: "popup",
+				id: "date:popup",
 				body: {
 					view: "calendar",
 					icons: [
@@ -133,9 +203,12 @@ export default class SourceDatatableView extends JetView {
 								}
 							}
 						},
-					]
+					],
 				}
 			},
 		};
+		
+		
 	}
+	
 }
