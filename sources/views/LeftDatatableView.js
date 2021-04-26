@@ -6,20 +6,13 @@ export default class LeftDatatableView extends SourceDatatableView {
 		
 		return {
 			id: "left",
-			// save: "http://localhost",
-			save: this.throttle(function (a, b, c, d) {
-				console.log(a, b, c, d);
-				// return webix.ajax().get()
-			}, 1000),
 			on: {
 				...on,
 				onBeforeDrop: this.onBeforeDropHandler({action: "ВХОД"}),
 				onItemClick: function (id, e, target) {
-					// console.log(id, e, target);
 					const {column} = id;
 					
 					if (column === "time") {
-						// console.log($$("editWindow"));
 						$$("left:editWindow").show(e);
 						$$("left:editWindow").getBody().focus();
 					}

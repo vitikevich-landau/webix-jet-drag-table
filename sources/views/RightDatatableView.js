@@ -6,12 +6,10 @@ export default class RightDatatableView extends SourceDatatableView {
 		
 		return {
 			id: "right",
-			save: "http://localhost",
 			on: {
 				...on,
 				onBeforeDrop: this.onBeforeDropHandler({action: "ВЫХОД"}),
 				onItemClick: function (id, e, target) {
-					// console.log(id, e, target);
 					const {column} = id;
 					
 					if (column === "time") {
